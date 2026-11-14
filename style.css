@@ -1,0 +1,115 @@
+
+/* Allgemeine Einstellungen */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 30px 15px;
+    font-family: Arial, sans-serif;
+    background: #171d28;
+    color: white;
+    text-align: center;
+}
+
+/* Hauptüberschrift */
+h1 {
+    font-size: 32px;
+    letter-spacing: 3px;
+    color: #e34b4b;
+    margin-bottom: 10px;
+}
+
+p {
+    color: #c0c6d0;
+    margin-bottom: 35px;
+}
+
+/* Spielerbereich */
+.container {
+    max-width: 650px;
+    margin: auto;
+}
+
+.spieler {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.karte {
+    background: #293241;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.karte h2 {
+    font-size: 17px;
+    margin-top: 0;
+}
+
+.position {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* Spielerfarben */
+.rot { color: #e34b4b; }
+.gruen { color: #36a66b; }
+.schwarz { color: #b9c2d0; }
+.gelb { color: #e7c843; }
+
+/* Mister X */
+.misterx {
+    background: #3a252a;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+.misterx .position {
+    color: #ff6565;
+}
+
+/* Button */
+button {
+    background: #b72e39;
+    color: white;
+    border: none;
+    padding: 17px 25px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    max-width: 400px;
+}
+
+button:hover {
+    background: #d3424d;
+}
+
+/* Musikbereich */
+
+.musikbereich {
+    margin-top: 35px;
+    padding: 20px;
+    background: #222b38;
+    border-radius: 12px;
+}
+
+.musikbereich h2 {
+    color: #e34b4b;
+    letter-spacing: 2px;
+}
+
+.musikbereich button {
+    background: #39485c;
+}
+
+.musikbereich button:hover {
+    background: #52647b;
+}

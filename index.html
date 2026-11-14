@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scotland Yard – Mister X</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ANMELDUNG -->
+    <div class="container" id="anmeldung">
+
+        <h1>THE HUNT FOR MISTER X</h1>
+        <p>Die Jagd durch London beginnt!</p>
+
+        <h2>SPIELERANMELDUNG</h2>
+
+        <form id="anmeldeFormular">
+
+            <label for="spielerName">Wer bist du?</label>
+
+            <select id="spielerName" required>
+                <option value="">Spieler auswählen</option>
+                <option value="Oli">Oli</option>
+                <option value="Jonas">Jonas</option>
+                <option value="Domi">Domi</option>
+            </select>
+
+            <label for="spielPasswort">Gemeinsames Passwort</label>
+
+            <input
+                type="password"
+                id="spielPasswort"
+                placeholder="Passwort eingeben"
+                required
+            >
+
+            <button type="submit" id="anmeldeButton">
+                ANMELDEN
+            </button>
+
+            <p id="anmeldeMeldung"></p>
+
+        </form>
+
+    </div>
+
+
+    <!-- SPIELBEREICH -->
+    <div class="container" id="spielbereich" hidden>
+
+        <h1>THE HUNT FOR MISTER X</h1>
+        <p>Die Jagd durch London beginnt!</p>
+
+        <h2>WILLKOMMEN, <span id="angemeldeterSpieler"></span>!</h2>
+
+        <h2>STARTPOSITIONEN</h2>
+
+        <div class="spieler">
+
+            <div class="karte">
+                <h2 class="rot">SPIELER 1</h2>
+                <div class="position" id="spieler1">?</div>
+            </div>
+
+            <div class="karte">
+                <h2 class="gruen">SPIELER 2</h2>
+                <div class="position" id="spieler2">?</div>
+            </div>
+
+            <div class="karte">
+                <h2 class="schwarz">SPIELER 3</h2>
+                <div class="position" id="spieler3">?</div>
+            </div>
+
+            <div class="karte">
+                <h2 class="gelb">SPIELER 4</h2>
+                <div class="position" id="spieler4">?</div>
+            </div>
+
+        </div>
+
+        <div class="misterx">
+
+            <h2>MISTER X</h2>
+
+            <p>Startposition</p>
+            <div class="position" id="misterxStart">?</div>
+
+            <p>Endziel</p>
+            <div class="position" id="misterxZiel">?</div>
+
+        </div>
+
+        <button onclick="neuWuerfeln()">
+            NEU AUSWÜRFELN
+        </button>
+
+        <div class="musikbereich">
+            <h2>ATMOSPHÄRE</h2>
+            <p>Begleitmusik zur Jagd auf Mister X</p>
+
+            <button id="musikButton" onclick="musikUmschalten()">
+                ♫ MUSIK STARTEN
+            </button>
+        </div>
+
+    </div>
+
+
+    <!-- SUPABASE-BIBLIOTHEK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- VERBINDUNG ZUR DATENBANK -->
+    <script src="supabase.js"></script>
+
+    <!-- SPIELFUNKTIONEN UND MUSIK -->
+    <script src="script.js"></script>
+
+    <!-- ONLINE-SPIELVERWALTUNG -->
+    <script src="online.js"></script>
+
+</body>
+</html>
