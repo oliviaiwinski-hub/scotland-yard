@@ -1,87 +1,232 @@
 
- // =====================================
- // SCOTLAND YARD – ONLINE-ANMELDUNG
- // =====================================
+// =====================================
+// SCOTLAND YARD – ONLINE-SPIELVERWALTUNG
+// =====================================
+
+let onlineSpielInterval = null;
+
+
+// =====================================
+// SUPABASE-ANFRAGE
+// =====================================
+
+async function onlineAnfrage(body) {
+
+    const { data, error } =
+        await window.supabaseClient.functions.invoke(
+            "scotland-yard",
+            { body }
+        );
+
+    if (error) {
+
+        let details = error.message;
+
+        if (error.context) {
+            try {
+                const text = await error.context.clone().text();
+                const parsed = JSON.parse(text);
+                details = parsed.error || parsed.message || details;
+            } catch (e) {
+                // Die ursprüngliche Fehlermeldung bleibt erhalten.
+            }
+        }
+
+        throw new Error(details);
+    }
+
+    if (!data || !data.success) {
+        throw new Error(
+            data?.error || "Keine gültige Serverantwort."
+        );
+    }
+
+    return data;
+}
+
+
+// =====================================
+// SPIELER ANMELDEN
+// =====================================
 
 async function spielerAnmelden(name, password) {
 
-    // Prüfen, ob Supabase verbunden ist
     if (!window.supabaseClient) {
         throw new Error(
-            "Supabase wurde nicht richtig geladen. Bitte supabase.js überprüfen."
+            "Supabase wurde nicht richtig geladen."
         );
+    }
+
+    const data = await onlineAnfrage({
+        action: "login",
+        name: name,
+        password: password
+    });
+
+    localStorage.setItem(
+        "scotlandYardPlayer",
+        data.playerName
+    );
+
+    localStorage.setItem(
+        "scotlandYardSession",
+        data.sessionToken
+    );
+
+    return data;
+}
+
+
+// =====================================
+// SPIELSTAND ANZEIGEN
+// =====================================
+
+function onlineSpielstandAnzeigen(positionen) {
+
+    if (!positionen) return;
+
+    document.getElementById("spieler1").textContent =
+        positionen.spieler1;
+
+    document.getElementById("spieler2").textContent =
+        positionen.spieler2;
+
+    document.getElementById("spieler3").textContent =
+        positionen.spieler3;
+
+    document.getElementById("spieler4").textContent =
+        positionen.spieler4;
+
+    document.getElementById("misterxStart").textContent =
+        positionen.misterxStart;
+
+    document.getElementById("misterxZiel").textContent =
+        positionen.misterxZiel;
+}
+
+
+// =====================================
+// AKTUELLEN SPIELSTAND ABRUFEN
+// =====================================
+
+async function onlineSpielstandLaden() {
+
+    const name = localStorage.getItem(
+        "scotlandYardPlayer"
+    );
+
+    const sessionToken = localStorage.getItem(
+        "scotlandYardSession"
+    );
+
+    if (!name || !sessionToken) return;
+
+    const data = await onlineAnfrage({
+        action: "get_state",
+        name: name,
+        sessionToken: sessionToken
+    });
+
+    if (data.positions) {
+        onlineSpielstandAnzeigen(data.positions);
+    }
+}
+
+
+// =====================================
+// AUTOMATISCHE SYNCHRONISIERUNG
+// =====================================
+
+function onlineSynchronisierungStarten() {
+
+    if (onlineSpielInterval) {
+        clearInterval(onlineSpielInterval);
+    }
+
+    // Sofort den aktuellen Spielstand laden
+    onlineSpielstandLaden().catch(console.error);
+
+    // Alle drei Sekunden aktualisieren
+    onlineSpielInterval = setInterval(
+        async function() {
+
+            try {
+                await onlineSpielstandLaden();
+            } catch (error) {
+                console.error(
+                    "Synchronisierungsfehler:",
+                    error
+                );
+            }
+
+        },
+        3000
+    );
+}
+
+
+// =====================================
+// NEUE SPIELRUNDE AUSWÜRFELN
+// =====================================
+
+async function onlineNeuWuerfeln() {
+
+    const name = localStorage.getItem(
+        "scotlandYardPlayer"
+    );
+
+    const sessionToken = localStorage.getItem(
+        "scotlandYardSession"
+    );
+
+    if (!name || !sessionToken) {
+        alert("Bitte zuerst anmelden.");
+        return;
+    }
+
+    const button = document.querySelector(
+        'button[onclick="neuWuerfeln()"]'
+    );
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "POSITIONEN WERDEN GEZOGEN...";
     }
 
     try {
 
-        const { data, error } =
-            await window.supabaseClient.functions.invoke(
-                "scotland-yard",
-                {
-                    body: {
-                        action: "login",
-                        name: name,
-                        password: password
-                    }
-                }
-            );
+        const data = await onlineAnfrage({
+            action: "roll",
+            name: name,
+            sessionToken: sessionToken
+        });
 
-        // Fehler von Supabase genauer auslesen
-        if (error) {
+        // Neue Positionen sofort anzeigen
+        onlineSpielstandAnzeigen(data.positions);
 
-            console.error("Supabase-Fehler:", error);
-
-            let details = "";
-
-            if (error.context) {
-                try {
-                    details = await error.context.clone().text();
-                } catch (e) {
-                    details = error.message;
-                }
-            }
-
-            console.error("Serverantwort:", details);
-
-            let meldung = error.message || "Unbekannter Fehler";
-
-            if (details) {
-                try {
-                    const serverDaten = JSON.parse(details);
-                    meldung += " – " +
-                        (serverDaten.error || serverDaten.message || details);
-                } catch (e) {
-                    meldung += " – " + details;
-                }
-            }
-
-            throw new Error(meldung);
-        }
-
-        // Prüfen, ob eine erfolgreiche Antwort vorliegt
-        if (!data || !data.success) {
-            throw new Error(
-                data?.error || "Der Server hat die Anmeldung nicht bestätigt."
-            );
-        }
-
-        // Sitzung auf diesem Gerät speichern
-        localStorage.setItem(
-            "scotlandYardPlayer",
-            data.playerName
+        console.log(
+            "Neue Spielrunde:",
+            data.positions
         );
-
-        localStorage.setItem(
-            "scotlandYardSession",
-            data.sessionToken
-        );
-
-        return data;
 
     } catch (error) {
 
-        console.error("Anmeldefehler:", error);
-        throw error;
+        console.error(
+            "Fehler beim Auswürfeln:",
+            error
+        );
+
+        alert(
+            "Das Auswürfeln hat nicht funktioniert: " +
+            error.message
+        );
+
+    } finally {
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = "NEU AUSWÜRFELN";
+        }
 
     }
 }
@@ -100,7 +245,6 @@ if (anmeldeFormular) {
         "submit",
         async function(event) {
 
-            // Normales Neuladen der Seite verhindern
             event.preventDefault();
 
             const name =
@@ -122,8 +266,10 @@ if (anmeldeFormular) {
 
             try {
 
-                const spieler =
-                    await spielerAnmelden(name, password);
+                const spieler = await spielerAnmelden(
+                    name,
+                    password
+                );
 
                 document.getElementById(
                     "angemeldeterSpieler"
@@ -136,6 +282,9 @@ if (anmeldeFormular) {
                 document.getElementById(
                     "spielbereich"
                 ).hidden = false;
+
+                // Gemeinsamen Spielstand laden
+                onlineSynchronisierungStarten();
 
             } catch (error) {
 
@@ -154,12 +303,6 @@ if (anmeldeFormular) {
             }
 
         }
-    );
-
-} else {
-
-    console.error(
-        "Das Anmeldeformular wurde in index.html nicht gefunden."
     );
 
 }
