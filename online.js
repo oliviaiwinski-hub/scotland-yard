@@ -1,9 +1,10 @@
 
-// =====================================
-// SCOTLAND YARD – ONLINE-SPIELVERWALTUNG
-// =====================================
+ // =====================================
+ // SCOTLAND YARD – ONLINE-SPIELVERWALTUNG
+ // =====================================
 
 let onlineSpielInterval = null;
+let ausgewaehltesPasswort = "";
 
 
 // =====================================
@@ -28,7 +29,7 @@ async function onlineAnfrage(body) {
                 const parsed = JSON.parse(text);
                 details = parsed.error || parsed.message || details;
             } catch (e) {
-                // Die ursprüngliche Fehlermeldung bleibt erhalten.
+                // Ursprüngliche Fehlermeldung verwenden
             }
         }
 
@@ -49,7 +50,7 @@ async function onlineAnfrage(body) {
 // SPIELER ANMELDEN
 // =====================================
 
-async function spielerAnmelden(name, password) {
+async function spielerAnmelden(name, password, role) {
 
     if (!window.supabaseClient) {
         throw new Error(
@@ -60,7 +61,8 @@ async function spielerAnmelden(name, password) {
     const data = await onlineAnfrage({
         action: "login",
         name: name,
-        password: password
+        password: password,
+        role: role
     });
 
     localStorage.setItem(
@@ -73,40 +75,102 @@ async function spielerAnmelden(name, password) {
         data.sessionToken
     );
 
+    localStorage.setItem(
+        "scotlandYardRole",
+        data.role
+    );
+
     return data;
 }
 
 
 // =====================================
-// SPIELSTAND ANZEIGEN
+// POSITIONEN ANZEIGEN
 // =====================================
 
 function onlineSpielstandAnzeigen(positionen) {
 
     if (!positionen) return;
 
-    document.getElementById("spieler1").textContent =
-        positionen.spieler1;
+    const rolle = positionen.rolle;
 
-    document.getElementById("spieler2").textContent =
-        positionen.spieler2;
+    // VIER DETEKTIVPOSITIONEN FÜR ALLE ANZEIGEN
+    const detektivBereich =
+        document.getElementById("detektivBereich");
 
-    document.getElementById("spieler3").textContent =
-        positionen.spieler3;
+    const misterxBereich =
+        document.getElementById("misterxBereich");
 
-    document.getElementById("spieler4").textContent =
-        positionen.spieler4;
+    detektivBereich.hidden = false;
 
-    document.getElementById("misterxStart").textContent =
-        positionen.misterxStart;
+    // Detektivkarten aktualisieren
+    if (Array.isArray(positionen.detektive)) {
 
-    document.getElementById("misterxZiel").textContent =
-        positionen.misterxZiel;
+        const gelbSchwarz = positionen.detektive[0];
+        const gruenRot = positionen.detektive[1];
+
+        if (gelbSchwarz) {
+
+            document.getElementById(
+                "detektivGelbName"
+            ).textContent =
+                gelbSchwarz.spieler.toUpperCase();
+
+            document.getElementById(
+                "positionGelb"
+            ).textContent =
+                gelbSchwarz.gelb ?? "?";
+
+            document.getElementById(
+                "positionSchwarz"
+            ).textContent =
+                gelbSchwarz.schwarz ?? "?";
+        }
+
+        if (gruenRot) {
+
+            document.getElementById(
+                "detektivGruenName"
+            ).textContent =
+                gruenRot.spieler.toUpperCase();
+
+            document.getElementById(
+                "positionGruen"
+            ).textContent =
+                gruenRot.gruen ?? "?";
+
+            document.getElementById(
+                "positionRot"
+            ).textContent =
+                gruenRot.rot ?? "?";
+        }
+    }
+
+    // MR. X SIEHT SEINE GEHEIMEN POSITIONEN
+    if (rolle === "mr_x") {
+
+        misterxBereich.hidden = false;
+
+        document.getElementById(
+            "misterxStart"
+        ).textContent =
+            positionen.misterxStart ?? "?";
+
+        document.getElementById(
+            "misterxZiel"
+        ).textContent =
+            positionen.misterxZiel ?? "?";
+
+    } else {
+
+        misterxBereich.hidden = true;
+
+    }
 }
 
 
 // =====================================
-// AKTUELLEN SPIELSTAND ABRUFEN
+// SPIELSTAND LADEN
 // =====================================
 
 async function onlineSpielstandLaden() {
@@ -143,10 +207,8 @@ function onlineSynchronisierungStarten() {
         clearInterval(onlineSpielInterval);
     }
 
-    // Sofort den aktuellen Spielstand laden
     onlineSpielstandLaden().catch(console.error);
 
-    // Alle drei Sekunden aktualisieren
     onlineSpielInterval = setInterval(
         async function() {
 
@@ -166,7 +228,7 @@ function onlineSynchronisierungStarten() {
 
 
 // =====================================
-// NEUE SPIELRUNDE AUSWÜRFELN
+// NEU AUSWÜRFELN
 // =====================================
 
 async function onlineNeuWuerfeln() {
@@ -184,13 +246,14 @@ async function onlineNeuWuerfeln() {
         return;
     }
 
-    const button = document.querySelector(
-        'button[onclick="neuWuerfeln()"]'
+    const button = document.getElementById(
+        "neuWuerfelnButton"
     );
 
     if (button) {
         button.disabled = true;
-        button.textContent = "POSITIONEN WERDEN GEZOGEN...";
+        button.textContent =
+            "POSITIONEN WERDEN GEZOGEN...";
     }
 
     try {
@@ -201,12 +264,12 @@ async function onlineNeuWuerfeln() {
             sessionToken: sessionToken
         });
 
-        // Neue Positionen sofort anzeigen
-        onlineSpielstandAnzeigen(data.positions);
+        if (data.positions) {
+            onlineSpielstandAnzeigen(data.positions);
+        }
 
         console.log(
-            "Neue Spielrunde:",
-            data.positions
+            "Neue Spielrunde wurde ausgelost."
         );
 
     } catch (error) {
@@ -233,7 +296,7 @@ async function onlineNeuWuerfeln() {
 
 
 // =====================================
-// ANMELDEFORMULAR
+// SCHRITT 1: NAME UND PASSWORT PRÜFEN
 // =====================================
 
 const anmeldeFormular =
@@ -260,20 +323,101 @@ if (anmeldeFormular) {
                 document.getElementById("anmeldeButton");
 
             meldung.textContent =
-                "Anmeldung wird überprüft...";
+                "Anmeldedaten werden überprüft...";
 
             button.disabled = true;
 
             try {
 
+                await onlineAnfrage({
+                    action: "verify",
+                    name: name,
+                    password: password
+                });
+
+                ausgewaehltesPasswort = password;
+
+                document.getElementById(
+                    "anmeldedatenBereich"
+                ).hidden = true;
+
+                document.getElementById(
+                    "rollenwahlBereich"
+                ).hidden = false;
+
+                meldung.textContent =
+                    "Anmeldedaten korrekt. Bitte wähle deine Rolle.";
+
+            } catch (error) {
+
+                meldung.textContent =
+                    "Fehler: " + error.message;
+
+                console.error(error);
+
+            } finally {
+
+                button.disabled = false;
+
+            }
+
+        }
+    );
+
+}
+
+
+// =====================================
+// SCHRITT 2: ROLLE BESTÄTIGEN
+// =====================================
+
+const rolleBestaetigenButton =
+    document.getElementById("rolleBestaetigenButton");
+
+if (rolleBestaetigenButton) {
+
+    rolleBestaetigenButton.addEventListener(
+        "click",
+        async function() {
+
+            const name =
+                document.getElementById("spielerName").value;
+
+            const role =
+                document.getElementById("spielerRolle").value;
+
+            const meldung =
+                document.getElementById("anmeldeMeldung");
+
+            if (!role) {
+                meldung.textContent =
+                    "Bitte zuerst eine Rolle auswählen.";
+                return;
+            }
+
+            rolleBestaetigenButton.disabled = true;
+
+            meldung.textContent =
+                "Rolle wird gespeichert...";
+
+            try {
+
                 const spieler = await spielerAnmelden(
                     name,
-                    password
+                    ausgewaehltesPasswort,
+                    role
                 );
 
                 document.getElementById(
                     "angemeldeterSpieler"
                 ).textContent = spieler.playerName;
+
+                document.getElementById(
+                    "rollenAnzeige"
+                ).textContent =
+                    spieler.role === "mr_x"
+                        ? "🎩 DU BIST MR. X"
+                        : "🕵️ DU BIST DETEKTIV";
 
                 document.getElementById(
                     "anmeldung"
@@ -283,7 +427,14 @@ if (anmeldeFormular) {
                     "spielbereich"
                 ).hidden = false;
 
-                // Gemeinsamen Spielstand laden
+                document.getElementById(
+                    "detektivBereich"
+                ).hidden = false;
+
+                document.getElementById(
+                    "misterxBereich"
+                ).hidden = spieler.role !== "mr_x";
+
                 onlineSynchronisierungStarten();
 
             } catch (error) {
@@ -298,7 +449,7 @@ if (anmeldeFormular) {
 
             } finally {
 
-                button.disabled = false;
+                rolleBestaetigenButton.disabled = false;
 
             }
 
