@@ -1,5 +1,6 @@
 
-/* Allgemeine Einstellungen */
+/* ALLGEMEINE EINSTELLUNGEN */
+
 * {
     box-sizing: border-box;
 }
@@ -13,7 +14,12 @@ body {
     text-align: center;
 }
 
-/* Hauptüberschrift */
+[hidden] {
+    display: none !important;
+}
+
+/* ÜBERSCHRIFTEN */
+
 h1 {
     font-size: 32px;
     letter-spacing: 3px;
@@ -23,58 +29,53 @@ h1 {
 
 p {
     color: #c0c6d0;
-    margin-bottom: 35px;
+    margin-bottom: 25px;
 }
 
-/* Spielerbereich */
+h2 {
+    margin-top: 25px;
+}
+
+/* CONTAINER */
+
 .container {
     max-width: 650px;
     margin: auto;
 }
 
-.spieler {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-bottom: 25px;
+/* FORMULARE */
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 30px;
 }
 
-.karte {
-    background: #293241;
-    padding: 20px;
-    border-radius: 12px;
-}
-
-.karte h2 {
-    font-size: 17px;
-    margin-top: 0;
-}
-
-.position {
-    font-size: 36px;
+label {
+    text-align: left;
     font-weight: bold;
-    margin: 10px 0;
+    margin-top: 8px;
 }
 
-/* Spielerfarben */
-.rot { color: #e34b4b; }
-.gruen { color: #36a66b; }
-.schwarz { color: #b9c2d0; }
-.gelb { color: #e7c843; }
-
-/* Mister X */
-.misterx {
-    background: #3a252a;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 25px;
+input,
+select {
+    width: 100%;
+    padding: 15px;
+    border-radius: 9px;
+    border: 1px solid #52647b;
+    background: #293241;
+    color: white;
+    font-size: 16px;
 }
 
-.misterx .position {
-    color: #ff6565;
+select option {
+    background: #293241;
+    color: white;
 }
 
-/* Button */
+/* BUTTONS */
+
 button {
     background: #b72e39;
     color: white;
@@ -86,13 +87,150 @@ button {
     cursor: pointer;
     width: 100%;
     max-width: 400px;
+    margin: 15px auto;
 }
 
 button:hover {
     background: #d3424d;
 }
 
-/* Musikbereich */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ROLLENANZEIGE */
+
+.rollenAnzeige {
+    display: inline-block;
+    background: #293241;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 15px 0;
+    border: 1px solid #52647b;
+}
+
+.bereichHinweis {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* DETEKTIVKARTEN */
+
+.detektivKarte {
+    background: #293241;
+    padding: 22px;
+    border-radius: 12px;
+    margin: 20px auto;
+    max-width: 500px;
+    border: 1px solid #52647b;
+}
+
+.detektivKarte h3 {
+    font-size: 21px;
+    margin: 0 0 20px;
+    letter-spacing: 1px;
+}
+
+.team-gelb-schwarz {
+    border-top: 4px solid #e7c843;
+}
+
+.team-gelb-schwarz h3 {
+    color: #e7c843;
+}
+
+.team-gruen-rot {
+    border-top: 4px solid #39a96b;
+}
+
+.team-gruen-rot h3 {
+    color: #55cf86;
+}
+
+/* FIGUREN */
+
+.figurenGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.figur {
+    background: #202a38;
+    padding: 15px 8px;
+    border-radius: 10px;
+    border: 1px solid #52647b;
+}
+
+.figur h4 {
+    margin: 0;
+    font-size: 15px;
+    letter-spacing: 2px;
+}
+
+.figur-gelb h4 {
+    color: #e7c843;
+}
+
+.figur-schwarz h4 {
+    color: #b9c1cc;
+}
+
+.figur-gruen h4 {
+    color: #55cf86;
+}
+
+.figur-rot h4 {
+    color: #ff6565;
+}
+
+.position {
+    font-size: 42px;
+    font-weight: bold;
+    margin: 15px 0;
+    color: #ffffff;
+    overflow-wrap: anywhere;
+}
+
+/* MR. X */
+
+.misterx {
+    background: #3a252a;
+    padding: 25px;
+    border-radius: 12px;
+    margin: 20px auto;
+    max-width: 450px;
+    border: 1px solid #b72e39;
+}
+
+.misterxPosition {
+    padding: 10px 0;
+}
+
+.misterxPosition p {
+    color: #ffb0b0;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.misterx .position {
+    color: #ff6565;
+}
+
+/* HINWEISE */
+
+.geheimHinweis {
+    color: #aeb9c9;
+    font-size: 14px;
+    margin: 20px auto 30px;
+    max-width: 400px;
+    line-height: 1.6;
+}
+
+/* MUSIK */
 
 .musikbereich {
     margin-top: 35px;
@@ -112,4 +250,30 @@ button:hover {
 
 .musikbereich button:hover {
     background: #52647b;
+}
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+    body {
+        padding: 20px 12px;
+    }
+
+    h1 {
+        font-size: 25px;
+    }
+
+    .position {
+        font-size: 34px;
+    }
+
+    .detektivKarte {
+        padding: 15px;
+    }
+
+    .figurenGrid {
+        gap: 8px;
+    }
+
 }
