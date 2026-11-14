@@ -21,27 +21,55 @@
 
         <form id="anmeldeFormular">
 
-            <label for="spielerName">Wer bist du?</label>
+            <!-- SCHRITT 1: NAME UND PASSWORT -->
+            <div id="anmeldedatenBereich">
 
-            <select id="spielerName" required>
-                <option value="">Spieler auswählen</option>
-                <option value="Oli">Oli</option>
-                <option value="Jonas">Jonas</option>
-                <option value="Domi">Domi</option>
-            </select>
+                <label for="spielerName">Wer bist du?</label>
 
-            <label for="spielPasswort">Gemeinsames Passwort</label>
+                <select id="spielerName" required>
+                    <option value="">Spieler auswählen</option>
+                    <option value="Oli">Oli</option>
+                    <option value="Jonas">Jonas</option>
+                    <option value="Domi">Domi</option>
+                </select>
 
-            <input
-                type="password"
-                id="spielPasswort"
-                placeholder="Passwort eingeben"
-                required
-            >
+                <label for="spielPasswort">Gemeinsames Passwort</label>
 
-            <button type="submit" id="anmeldeButton">
-                ANMELDEN
-            </button>
+                <input
+                    type="password"
+                    id="spielPasswort"
+                    placeholder="Passwort eingeben"
+                    required
+                >
+
+                <button type="submit" id="anmeldeButton">
+                    WEITER ZUR ROLLENWAHL
+                </button>
+
+            </div>
+
+            <!-- SCHRITT 2: ROLLENAUSWAHL -->
+            <div id="rollenwahlBereich" hidden>
+
+                <h2>WELCHE ROLLE MÖCHTEST DU SPIELEN?</h2>
+
+                <p>
+                    Wähle aus, ob du als Detektiv oder als Mr. X spielen möchtest.
+                </p>
+
+                <label for="spielerRolle">Deine Rolle</label>
+
+                <select id="spielerRolle">
+                    <option value="">Rolle auswählen</option>
+                    <option value="detektiv">Detektiv</option>
+                    <option value="mr_x">Mr. X</option>
+                </select>
+
+                <button type="button" id="rolleBestaetigenButton">
+                    ROLLE BESTÄTIGEN
+                </button>
+
+            </div>
 
             <p id="anmeldeMeldung"></p>
 
@@ -58,70 +86,117 @@
 
         <h2>WILLKOMMEN, <span id="angemeldeterSpieler"></span>!</h2>
 
-        <h2>STARTPOSITIONEN</h2>
+        <div id="rollenAnzeige" class="rollenAnzeige"></div>
 
-        <div class="spieler">
 
-            <div class="karte">
-                <h2 class="rot">SPIELER 1</h2>
-                <div class="position" id="spieler1">?</div>
+        <!-- DETEKTIVPOSITIONEN -->
+        <div id="detektivBereich" hidden>
+
+            <h2>POSITIONEN DER DETEKTIVE</h2>
+
+            <p class="bereichHinweis">
+                Alle vier Detektivpositionen sind für alle Spieler sichtbar.
+            </p>
+
+            <!-- DETEKTIV GELB UND SCHWARZ -->
+            <div class="detektivKarte team-gelb-schwarz">
+
+                <h3 id="detektivGelbName">DETEKTIV</h3>
+
+                <div class="figurenGrid">
+
+                    <div class="figur figur-gelb">
+                        <h4>GELB</h4>
+                        <div class="position" id="positionGelb">?</div>
+                    </div>
+
+                    <div class="figur figur-schwarz">
+                        <h4>SCHWARZ</h4>
+                        <div class="position" id="positionSchwarz">?</div>
+                    </div>
+
+                </div>
+
             </div>
 
-            <div class="karte">
-                <h2 class="gruen">SPIELER 2</h2>
-                <div class="position" id="spieler2">?</div>
-            </div>
 
-            <div class="karte">
-                <h2 class="schwarz">SPIELER 3</h2>
-                <div class="position" id="spieler3">?</div>
-            </div>
+            <!-- DETEKTIV GRÜN UND ROT -->
+            <div class="detektivKarte team-gruen-rot">
 
-            <div class="karte">
-                <h2 class="gelb">SPIELER 4</h2>
-                <div class="position" id="spieler4">?</div>
+                <h3 id="detektivGruenName">DETEKTIV</h3>
+
+                <div class="figurenGrid">
+
+                    <div class="figur figur-gruen">
+                        <h4>GRÜN</h4>
+                        <div class="position" id="positionGruen">?</div>
+                    </div>
+
+                    <div class="figur figur-rot">
+                        <h4>ROT</h4>
+                        <div class="position" id="positionRot">?</div>
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
 
-        <div class="misterx">
 
-            <h2>MISTER X</h2>
+        <!-- MR. X -->
+        <div id="misterxBereich" hidden>
 
-            <p>Startposition</p>
-            <div class="position" id="misterxStart">?</div>
+            <h2>DEINE GEHEIMEN POSITIONEN</h2>
 
-            <p>Endziel</p>
-            <div class="position" id="misterxZiel">?</div>
+            <div class="misterx">
+
+                <div class="misterxPosition">
+                    <p>DEINE STARTPOSITION</p>
+                    <div class="position" id="misterxStart">?</div>
+                </div>
+
+                <div class="misterxPosition">
+                    <p>DEIN ENDZIEL</p>
+                    <div class="position" id="misterxZiel">?</div>
+                </div>
+
+            </div>
+
+            <p class="geheimHinweis">
+                Diese Informationen sind geheim.
+                Verrate sie nicht den Detektiven!
+            </p>
 
         </div>
 
-        <button onclick="neuWuerfeln()">
+
+        <button id="neuWuerfelnButton" onclick="neuWuerfeln()">
             NEU AUSWÜRFELN
         </button>
 
+
+        <!-- MUSIK -->
         <div class="musikbereich">
+
             <h2>ATMOSPHÄRE</h2>
+
             <p>Begleitmusik zur Jagd auf Mister X</p>
 
             <button id="musikButton" onclick="musikUmschalten()">
                 ♫ MUSIK STARTEN
             </button>
+
         </div>
 
     </div>
 
 
-    <!-- SUPABASE-BIBLIOTHEK -->
+    <!-- SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- VERBINDUNG ZUR DATENBANK -->
     <script src="supabase.js"></script>
-
-    <!-- SPIELFUNKTIONEN UND MUSIK -->
     <script src="script.js"></script>
-
-    <!-- ONLINE-SPIELVERWALTUNG -->
     <script src="online.js"></script>
 
 </body>
