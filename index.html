@@ -87,7 +87,36 @@
         <h2>WILLKOMMEN, <span id="angemeldeterSpieler"></span>!</h2>
 
         <div id="rollenAnzeige" class="rollenAnzeige"></div>
+        
+<!-- NEUE SPIELRUNDE -->
+<div class="neueRundeBereich">
 
+    <h2>NEUE SPIELRUNDE</h2>
+
+    <p>
+        Bestimme, wer in der nächsten Runde Mister X spielt.
+    </p>
+
+    <label for="neuerMrX">Neuer Mister X:</label>
+
+    <select id="neuerMrX">
+        <option value="">Spieler auswählen</option>
+        <option value="Oli">Oli</option>
+        <option value="Jonas">Jonas</option>
+        <option value="Domi">Domi</option>
+    </select>
+
+    <button
+        type="button"
+        id="neueRundeButton"
+        onclick="onlineNeueRundeStarten()"
+    >
+        NEUE RUNDE STARTEN
+    </button>
+
+    <p id="neueRundeMeldung"></p>
+
+</div>
 
         <!-- DETEKTIVPOSITIONEN -->
         <div id="detektivBereich" hidden>
